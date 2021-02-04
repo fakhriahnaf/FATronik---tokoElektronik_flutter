@@ -1,6 +1,6 @@
 part of 'models.dart';
 
-class Barang {
+class Barang extends Equatable {
   final int id;
   final String picturePath;
   final String name;
@@ -18,6 +18,12 @@ class Barang {
     this.price,
     this.rate,
   });
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [
+    id, picturePath,name, description, spesification, price, rate
+  ];
 }
 
 List<Barang> mockBarang = [

@@ -5,11 +5,7 @@ class CustomTabBar extends StatelessWidget {
   final List<String> titles;
   final Function(int) onTap;
 
-  CustomTabBar({
-    @required this.titles,
-    this.selectedIndex,
-    @required this.onTap,
-  });
+  CustomTabBar({@required this.titles, this.selectedIndex, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +14,7 @@ class CustomTabBar extends StatelessWidget {
         child: Stack(
           children: [
             Container(
-              padding: EdgeInsets.only(top: 48),
+              margin: EdgeInsets.only(top: 48),
               height: 1,
               color: 'F2F2F2'.toColor(),
             ),

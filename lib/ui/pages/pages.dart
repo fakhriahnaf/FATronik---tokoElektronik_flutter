@@ -14,3 +14,4 @@ part 'sign-up-page.dart';
 part 'address-page.dart';
 part 'main-page.dart';
 part 'home-page.dart';
+part 'detail-barang-page.dart';

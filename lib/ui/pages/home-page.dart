@@ -6,10 +6,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int selectedIndex = 0;
   
   @override
   Widget build(BuildContext context) {
-    int selectedIndex = 0;
     double listItemWidth = 
       MediaQuery.of(context).size.width - 2 * defaultMargin;
     

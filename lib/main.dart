@@ -1,3 +1,4 @@
+import 'package:bogorTronik/models/models.dart';
 import 'package:bogorTronik/ui/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,8 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainPage(
-      ),
+      home: DetailBarang(transaction: Transaction(barang: mockBarang[0]))
     );
   }
 }
