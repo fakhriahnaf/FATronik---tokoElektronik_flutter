@@ -20,7 +20,7 @@ class Barang extends Equatable {
   });
 
   @override
-  // TODO: implement props
+
   List<Object> get props => [
     id, picturePath,name, description, spesification, price, rate
   ];
