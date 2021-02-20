@@ -6,12 +6,12 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    bool isLoading = false;
-
     return GeneralPage(
       title: 'Sign In',
       subtitle: 'Fin your the best way',
@@ -94,18 +94,54 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ],
           ),
+
+          ///BUTTON SIGN IN
           SizedBox(height: 50),
           Container(
             width: double.infinity,
             height: 48,
             margin: EdgeInsets.symmetric(horizontal: defaultMargin),
             child: isLoading
-                ? SpinKitFadingCircle(
-                    size: 45,
-                    color: mainColor,
-                  )
+                ? loadingIndicator
                 : RaisedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      // ignore: deprecated_member_use
+                      await context.bloc<UserCubit>().signIn(
+                          emailController.text, passwordController.text);
+
+                      //recognized backend and message sukses aatau tidak
+                      // ignore: deprecated_member_use
+                      UserState state = context.bloc<UserCubit>().state;
+
+                      if (state is UserLoaded) {
+                        // ignore: deprecated_member_use
+                        context.bloc<BarangCubit>().getBarang();
+                        // ignore: deprecated_member_use
+                        context.bloc<TransactionCubit>().getTransaction();
+                        Get.to(MainPage());
+                      } else {
+                        Get.snackbar("", "",
+                            backgroundColor: 'D9435E'.toColor(),
+                            icon: Icon(MdiIcons.closeCircleOutline,
+                                color: Colors.white),
+                            titleText: Text(
+                              'Sign In Failed',
+                              style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            messageText: Text(
+                              (state as UserLoadingFailed).message,
+                              style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
+                            )
+                          );
+                      }
+                    },
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -116,6 +152,8 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
           ),
+
+          ///button create account
           SizedBox(height: 20),
           Container(
             width: double.infinity,

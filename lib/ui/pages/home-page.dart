@@ -7,12 +7,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-  
+
   @override
   Widget build(BuildContext context) {
-    double listItemWidth = 
-      MediaQuery.of(context).size.width - 2 * defaultMargin;
-    
+    double listItemWidth =
+        MediaQuery.of(context).size.width - 2 * defaultMargin;
+
     return ListView(
       children: [
         Column(
@@ -52,7 +52,12 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         image: DecorationImage(
-                            image: AssetImage('assets/dummy-image.jpg'),
+                            // ignore: deprecated_member_use
+                            image: NetworkImage(
+                                // ignore: deprecated_member_use
+                                (context.bloc<UserCubit>().state as UserLoaded)
+                                    .user
+                                    .picturePath),
                             fit: BoxFit.cover)),
                   ),
                 ],
@@ -64,23 +69,40 @@ class _HomePageState extends State<HomePage> {
             Container(
               height: 278,
               width: double.infinity,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  Row(
-                    children: mockBarang
-                        .map((e) => Padding(
-                              padding: EdgeInsets.only(
-                                  left: (e == mockBarang.first)
-                                      ? defaultMargin
-                                      : 0,
-                                  right: defaultMargin),
-                              child: ItemCard(e),
-                            ))
-                        .toList(),
-                  )
-                ],
-              ),
+              child: BlocBuilder<BarangCubit, BarangState>(
+                  builder: (_, state) => (state is BarangLoaded)
+                      ? ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            Row(
+                              children: state.barang
+                                  .map((e) => Padding(
+                                        padding: EdgeInsets.only(
+                                            left: (e == state.barang.first)
+                                                ? defaultMargin
+                                                : 0,
+                                            right: defaultMargin),
+                                        child: GestureDetector(
+                                            onTap: () {
+                                              Get.to(DetailBarang(
+                                                transaction: Transaction(
+                                                    barang: e,
+                                                    // ignore: deprecated_member_use
+                                                    user: (context.bloc<UserCubit>()
+                                                            .state as UserLoaded)
+                                                        .user),
+                                                onBackButtonPressed: () {
+                                                  Get.back();
+                                                },
+                                              ));
+                                            },
+                                            child: ItemCard(e)),
+                                      ))
+                                  .toList(),
+                            )
+                          ],
+                        )
+                      : Center(child: loadingIndicator)),
             ),
 
             ///Recomended
@@ -99,24 +121,32 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                   SizedBox(height: 16),
-                  Builder(
-                    builder: (_) {
-                      List<Barang> barangs = (selectedIndex == 0)
-                          ? mockBarang
-                          : (selectedIndex == 1)
-                              ? []
-                              : [];
+                  BlocBuilder<BarangCubit, BarangState>(builder: (_, state) {
+                    if (state is BarangLoaded) {
+                      List<Barang> barang = state.barang
+                          .where((element) =>
+                              element.types.contains((selectedIndex == 0)
+                                  ? TipeBarang.new_arrival
+                                  : (selectedIndex == 1)
+                                      ? TipeBarang.popular
+                                      : TipeBarang.recommended))
+                          .toList();
                       return Column(
-                        children: barangs
-                            .map((e) =>
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(defaultMargin, 0, defaultMargin, 20),
-                                  child: ListBarang(barang: e, itemWidth: listItemWidth),
+                        children: barang
+                            .map((e) => Padding(
+                                  padding: EdgeInsets.fromLTRB(
+                                      defaultMargin, 0, defaultMargin, 20),
+                                  child: ListBarang(
+                                      barang: e, itemWidth: listItemWidth),
                                 ))
                             .toList(),
                       );
-                    },
-                  ),
+                    } else {
+                      return Center(
+                        child: loadingIndicator,
+                      );
+                    }
+                  }),
                   SizedBox(
                     height: 80,
                   )
